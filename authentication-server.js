@@ -5,12 +5,21 @@ const port = 3297
 
 class AuthenticationServer {
   constructor(){
-    app.get('/', function (req, res) {
+    app.get('/', (function (req, res) {
+      this.authenticationCallback(req.query.code)
       res.send('Hello World!')
-    });
+    }).bind(this));
     app.listen(port, function () {
       console.log(`Authentication Server listening on Port ${port}`)
     })
+  }
+
+  setAuthenticationCallback(callback){
+    this.authenticationCallback = callback
+  }
+
+  authenticationCallback(code){
+    return
   }
 
   getRedirectUri(){
