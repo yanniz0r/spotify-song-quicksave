@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron -r babel-register ."
   },
   "keywords": [],
   "author": "Yannic Inselmann <yannic.inselmann@gmail.com> (http://inseldu.de/)",
@@ -13,5 +13,11 @@
     "electron": "^1.8.3",
     "express": "^4.16.2",
     "spotify-web-api-node": "^3.0.0"
+  },
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "babel-register": "^6.26.0"
   }
 }

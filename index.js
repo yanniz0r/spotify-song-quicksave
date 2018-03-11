@@ -1,8 +1,8 @@
-const {app, shell, Menu, MenuItem, Tray, nativeImage} = require('electron')
-const path = require('path')
-const secrets = require('./secrets')
-const AuthenticationServer = require('./authentication-server')
-const SpotifyWebApi = require('spotify-web-api-node')
+import {app, shell, Menu, MenuItem, Tray, nativeImage} from 'electron'
+import path from 'path'
+import secrets from './secrets'
+import AuthenticationServer from './authentication-server'
+import SpotifyWebApi from 'spotify-web-api-node'
 
 const authenticationServer = new AuthenticationServer()
 
@@ -15,7 +15,7 @@ const spotify = new SpotifyWebApi({
 const authorizeURL = spotify.createAuthorizeURL(['user-read-private', 'user-read-currently-playing', 'playlist-modify-private', 'user-library-modify'])
 shell.openExternal(authorizeURL);
 
-authenticationServer.setAuthenticationCallback(function(code){
+authenticationServer.setAuthenticationCallback((code) => {
   console.log(code)
   spotify.authorizationCodeGrant(code)
   .then(function(data) {
