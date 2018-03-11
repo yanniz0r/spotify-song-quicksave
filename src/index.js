@@ -1,35 +1,10 @@
 import {app, shell, Menu, MenuItem, Tray, nativeImage} from 'electron'
 import path from 'path'
 import secrets from './secrets'
-import AuthenticationServer from './authentication-server'
-import SpotifyWebApi from 'spotify-web-api-node'
+import SpotifyAPIWrapper from './spotify-api-wrapper'
 
-const authenticationServer = new AuthenticationServer()
-
-const spotify = new SpotifyWebApi({
-  redirectUri : authenticationServer.getRedirectUri(),
-  clientId : secrets.clientId,
-  clientSecret: secrets.clientSecret
-})
-
-const authorizeURL = spotify.createAuthorizeURL(['user-read-private', 'user-read-currently-playing', 'playlist-modify-private', 'user-library-modify'])
-shell.openExternal(authorizeURL);
-
-authenticationServer.setAuthenticationCallback((code) => {
-  console.log(code)
-  spotify.authorizationCodeGrant(code)
-  .then(function(data) {
-    console.log('The token expires in ' + data.body['expires_in']);
-    console.log('The access token is ' + data.body['access_token']);
-    console.log('The refresh token is ' + data.body['refresh_token']);
-
-    // Set the access token on the API object to use it in later calls
-    spotify.setAccessToken(data.body['access_token']);
-    spotify.setRefreshToken(data.body['refresh_token']);
-  }, function(err) {
-    console.log('Something went wrong!', err);
-  })
-})
+const spotify = new SpotifyAPIWrapper()
+spotify.opentAuthenticationPrompt()
 
 let tray = null
 
@@ -42,12 +17,12 @@ const icon = nativeImage.createFromPath(iconPath).resize({
 const addSongMenuItem = new MenuItem({
   label: 'Add to my songs',
   click: function(){
-    spotify.getMyCurrentPlayingTrack()
+    spotify.spotifyApi.getMyCurrentPlayingTrack()
     .then(function(data){
       const { item } = data.body
       console.log(`Currently playing '${item.name}' (${item.id})`)
       console.log(item.id)
-      spotify.addToMySavedTracks([item.id])
+      spotify.spotifyApi.addToMySavedTracks([item.id])
       .then(function(data) {
         console.log('Added track!');
       }, function(err) {
