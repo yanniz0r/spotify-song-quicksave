@@ -7,7 +7,9 @@ class TrayMenu {
     this.spotifyApiWrapper = spotifyApiWrapper
     this.tray = new Tray(this.getIcon())
     this.contextMenu = Menu.buildFromTemplate([
-      this.getAddSongMenuItem()
+      this.getAddSongMenuItem(),
+      {type: 'separator'},
+      {role: 'quit'}
     ])
     this.tray.setToolTip('Spotify Song Quicksave')
     this.tray.setContextMenu(this.contextMenu)
