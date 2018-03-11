@@ -33,6 +33,20 @@ class SpotifyAPIWrapper {
     })
   }
 
+  addCurrentlyPlayingSong = () => {
+    return this.spotifyApi.getMyCurrentPlayingTrack()
+    .then((data) => {
+      const { item } = data.body
+      console.log(`Currently playing '${item.name}' (${item.id})`)
+      this.spotifyApi.addToMySavedTracks([item.id])
+      .then((data) => {
+        console.log('Added track!')
+      }, (err) => {
+        console.log('Something went wrong!', err)
+      })
+    })
+  }
+
 }
 
 export default SpotifyAPIWrapper
