@@ -15,9 +15,22 @@ class SpotifyAPIWrapper {
     this.authenticationServer.setAuthenticationCallback(this.authenticate)
   }
 
-  opentAuthenticationPrompt = () => {
-    this.authenticationURL = this.spotifyApi.createAuthorizeURL(['user-read-private', 'user-read-currently-playing', 'playlist-modify-private', 'user-library-modify'])
+  openAuthenticationPrompt = () => {
+    this.authenticationURL = this.spotifyApi.createAuthorizeURL(['playlist-modify-private', 'playlist-modify-public', 'playlist-read-collaborative', 'user-read-private', 'user-read-currently-playing', 'playlist-modify-private', 'user-library-modify'])
     shell.openExternal(this.authenticationURL)
+  }
+
+  authenticationCallback = () => {
+
+  }
+
+  addCurrentTrackToPlaylist = (playlistId) => {
+    this.spotifyApi.getMyCurrentPlayingTrack()
+    .then((data) => {
+      const { item } = data.body
+      console.log(this.user.id, playlistId, item.id)
+      this.spotifyApi.addTracksToPlaylist(this.user.id, playlistId, ["spotify:track:" + item.id])
+    })
   }
 
   authenticate = (code) => {
@@ -28,6 +41,11 @@ class SpotifyAPIWrapper {
       console.log('The refresh token is ' + data.body['refresh_token'])
       this.spotifyApi.setAccessToken(data.body['access_token'])
       this.spotifyApi.setRefreshToken(data.body['refresh_token'])
+      this.spotifyApi.getMe()
+      .then(response => {
+        this.user = response.body
+        this.authenticationCallback()
+      })
     }, (err) => {
       console.log('Something went wrong!', err)
     })
